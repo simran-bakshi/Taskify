@@ -1,13 +1,33 @@
 # 🚀 Getting Started with Django — My First Project 🐍
 
-This project marks my first step into the world of **Django 🌐**, coming from a background in Java ☕ development.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white"/>
+  <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
+  <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Project-Learning-blue?style=for-the-badge"/>
+</p>
+
+This project marks my first step into the world of **Django 🌿**, coming from a background in Java ☕ development.
 The goal of this project is to understand how Django works by building a simple yet functional **Todo application 📝**.
+
+> ⚠️ This application is built purely for **learning purposes**.
+
+---
+
+## 🌐 Live Demo
+
+👉 *Coming Soon...*
+
+<!-- Replace with your deployed link -->
+
+<!-- Example: https://your-app.onrender.com -->
 
 ---
 
 ## 📌 About the Project
 
-This is a basic **Todo App 📝** built using Django 🌐 that allows users to:
+This is a basic **Todo App 📝** built using Django 🌿 that allows users to:
 
 * ✅ Add tasks
 * ✏️ Update tasks
@@ -26,7 +46,7 @@ The focus of this project is not just functionality, but also understanding Djan
 
 ## 🎯 Purpose
 
-As someone transitioning from Java ☕ to Django 🌐, this project serves as:
+As someone transitioning from Java ☕ to Django 🌿, this project serves as:
 
 * 🚀 A hands-on introduction to Django
 * 🧠 Understanding MVT architecture
@@ -34,10 +54,16 @@ As someone transitioning from Java ☕ to Django 🌐, this project serves as:
 
 ---
 
+## 🎨 UI Note
+
+The user interface is intentionally kept **simple and minimal 🎯** to focus more on backend logic and Django fundamentals rather than design complexity.
+
+---
+
 ## 🛠️ Tech Stack
 
 * 🐍 Python
-* 🌐 Django
+* 🌿 Django
 * 🧾 HTML
 * 🎨 CSS
 
@@ -45,20 +71,17 @@ As someone transitioning from Java ☕ to Django 🌐, this project serves as:
 
 ## 📂 Project Setup
 
-Follow these steps to run the project locally:
-
 ```bash
 # Clone the repository
 git clone https://github.com/simran-bakshi/django-todo.git
 
 # Navigate into the project folder
-cd <project-folder>
+cd todoproject
 
 # Create virtual environment
 python -m venv venv
 
-# Activate virtual environment
-# Windows
+# Activate virtual environment (Windows)
 venv\Scripts\activate
 
 # Install dependencies
@@ -70,6 +93,15 @@ python manage.py migrate
 # Start development server
 python manage.py runserver
 ```
+
+---
+
+## 🌍 Deployment
+
+This project can be deployed using:
+
+* Render 🚀 (Recommended)
+* Railway 🚆
 
 ---
 
