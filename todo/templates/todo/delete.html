@@ -1,0 +1,34 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Task</title>
+<!-- CSS -->
+<link rel="stylesheet" href="{% static 'todo/style.css' %}">
+</head>
+
+<body class="delete-body">
+<div class="delete-container">
+
+    <h3 class="delete-title">
+        Are you sure you want to delete<br>
+        <span class="highlight">"{{ task }}"</span>?
+    </h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="btn-group">
+            <button type="submit" class="delete-btn">Yes, Delete</button>
+            <a href="/" class="cancel-btn">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+</body>
+</html>
