@@ -49,7 +49,7 @@ Follow these steps to run the project locally:
 
 ```bash
 # Clone the repository
-git clone <your-repo-link>
+git clone https://github.com/simran-bakshi/django-todo.git
 
 # Navigate into the project folder
 cd <project-folder>
