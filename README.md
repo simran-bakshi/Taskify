@@ -17,7 +17,7 @@ The goal of this project is to understand how Django works by building a simple 
 
 ## 🌐 Live Demo
 
-👉 *Coming Soon...*
+👉 https://my-todo-rx59.onrender.com/
 
 <!-- Replace with your deployed link -->
 
