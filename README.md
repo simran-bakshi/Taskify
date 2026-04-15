@@ -121,7 +121,7 @@ Through this project, I learned:
 * 🔐 Add authentication (login/signup)
 * 🎨 Improve UI/UX
 * ⏰ Add task deadlines & priorities
-* ☁️ Deploy the application
+* ⚡ Optimize performance and scalability
 
 ---
 
