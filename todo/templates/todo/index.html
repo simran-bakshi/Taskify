@@ -1,49 +1,354 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}Dashboard — Taskify{% endblock %}
 
-<!DOCTYPE html>
+{% block body %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My To-Do List</title>
+<div class="dash-page">
 
-<!-- CSS LINK -->
-<link rel="stylesheet" href="{% static 'todo/style.css' %}">
-</head>
+  <!-- TOP BAR -->
+  <nav class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">T</div>  <!-- ✅ Fixed: Y → T -->
+      <span class="topbar-logo-name">Taskify</span>
+    </div>
 
-<body class="index-body">
-<div class="container">
-    <h2>My To-Do List</h2>
+    <div class="topbar-nav">
+      <a href="/" class="active">Dashboard</a>
+      <a href="/task">Add Task</a>
+    </div>
 
-    <form method="POST" action="/">
-        {% csrf_token %}
-        {{ form.title }}
-        <button type="submit">Add</button>
-    </form>
+    <div class="topbar-hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
 
-    <hr>
+    <div class="topbar-avatar" onclick="logout()">U</div>
+  </nav>
 
-    {% if tasks %}
-        {% for task in tasks %}
-            <div class="task {% if task.completed %}completed{% endif %}">
-                <span>
-                    {% if task.completed %}
-                        <strike>{{ task.title }}</strike>
-                    {% else %}
-                        {{ task.title }}
-                    {% endif %}
-                </span>
+  <!-- Mobile nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="/">Dashboard</a>
+    <a href="/task">Add Task</a>
+  </div>
 
-                <div class="actions">
-                    <a href="{% url 'update_task' task.id %}">✏️</a>
-                    <a href="{% url 'delete_task' task.id %}">🗑️</a>
-                </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p class="empty">No tasks yet — add one above!</p>
-    {% endif %}
+  <!-- DASHBOARD BODY -->
+  <div class="dash-body">
+    <h1 class="dash-welcome">Good day &#128075;</h1>
+    <p class="dash-date">Welcome to your dashboard.</p>
+
+    <!-- Stats grid — closes BEFORE the panel -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalTasks">--</div>
+        <div class="stat-label">Total Tasks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="completedTasks">--</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingTasks">--</div>
+        <div class="stat-label">In Progress</div>
+      </div>
+    </div>  <!-- ✅ stats-grid ends here — panel is now outside it -->
+
+    <!-- Task list panel — full width, below stats -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">All Tasks</span>
+        <div class="panel-actions">
+          <a href="/task">
+            <button class="btn btn-primary btn-sm">+ Add Task</button>
+          </a>
+        </div>
+      </div>
+      <div class="panel-body" id="taskList">
+        <div style="padding:24px;text-align:center;color:#9ca3af;font-size:0.9rem;">Loading tasks...</div>
+      </div>
+    </div>
+
+  </div>
 </div>
-</body>
-</html>
+
+
+<!-- ===================== EDIT MODAL ===================== -->
+<div id="editModal" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+">
+  <div style="
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  ">
+    <h3 style="margin:0 0 16px;font-size:1.1rem;">Edit Task</h3>
+
+    <input
+      id="editInput"
+      type="text"
+      placeholder="Task title"
+      style="
+          width: 100%; padding: 10px 12px;
+          border: 1px solid #d1d5db; border-radius: 8px;
+          font-size: 0.95rem; box-sizing: border-box;
+          outline: none;
+      "
+    >
+
+    <p id="editError" style="color:red;font-size:0.85rem;margin:8px 0 0;display:none;"></p>
+
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;">
+      <button
+        onclick="closeEditModal()"
+        style="
+            padding: 8px 18px; border-radius: 8px;
+            border: 1px solid #d1d5db; background: #fff;
+            cursor: pointer; font-size: 0.9rem;
+        "
+      >Cancel</button>
+
+      <button
+        onclick="saveEdit()"
+        style="
+            padding: 8px 18px; border-radius: 8px;
+            border: none; background: #2563eb;
+            color: #fff; cursor: pointer; font-size: 0.9rem;
+        "
+      >Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== DELETE CONFIRM MODAL ===================== -->
+<div id="deleteModal" style="
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+">
+  <div style="
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 380px;
+      margin: 0 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  ">
+    <h3 style="margin:0 0 8px;font-size:1.1rem;">Delete Task</h3>
+    <p style="margin:0 0 20px;color:#6b7280;font-size:0.9rem;">
+      Are you sure? This cannot be undone.
+    </p>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button
+        onclick="closeDeleteModal()"
+        style="
+            padding: 8px 18px; border-radius: 8px;
+            border: 1px solid #d1d5db; background: #fff;
+            cursor: pointer; font-size: 0.9rem;
+        "
+      >Cancel</button>
+
+      <button
+        onclick="confirmDelete()"
+        style="
+            padding: 8px 18px; border-radius: 8px;
+            border: none; background: #dc2626;
+            color: #fff; cursor: pointer; font-size: 0.9rem;
+        "
+      >Delete</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ─── helpers ────────────────────────────────────────────────
+function toggleNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+function logout() {
+  localStorage.removeItem('access');
+  localStorage.removeItem('refresh');
+  window.location.href = '/login';
+}
+
+const API = '/api/tasks/';
+
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    Authorization: 'Bearer ' + localStorage.getItem('access')
+  };
+}
+
+
+// ─── load & render tasks ────────────────────────────────────
+async function loadTasks() {
+  const token = localStorage.getItem('access');
+  if (!token) { window.location.href = '/login'; return; }
+
+  const res = await fetch(API, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+
+  if (res.status === 401) { window.location.href = '/login'; return; }
+
+  const tasks = await res.json();
+  const container = document.getElementById('taskList');
+
+  // Update stats
+  document.getElementById('totalTasks').innerText = tasks.length;
+  const completed = tasks.filter(t => t.completed).length;
+  document.getElementById('completedTasks').innerText = completed;
+  document.getElementById('pendingTasks').innerText = tasks.length - completed;
+
+  if (tasks.length === 0) {
+    container.innerHTML = '<div style="padding:32px;text-align:center;color:#9ca3af;font-size:0.9rem;">No tasks yet. <a href="/task">Add your first task</a>.</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  tasks.forEach(task => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;flex:1;">
+        <input
+          type="checkbox"
+          ${task.completed ? 'checked' : ''}
+          onchange="toggleComplete(${task.id}, this.checked)"
+          style="width:16px;height:16px;cursor:pointer;accent-color:#2563eb;"
+          title="${task.completed ? 'Mark incomplete' : 'Mark complete'}"
+        >
+        <div
+          class="task-title"
+          style="${task.completed ? 'text-decoration:line-through;color:#9ca3af;' : ''}"
+        >${task.title}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button
+          class="btn btn-sm btn-outline"
+          onclick="openEditModal(${task.id}, '${task.title.replace(/'/g, "\\'")}')"
+        >Edit</button>
+        <button
+          class="btn btn-sm btn-danger"
+          onclick="openDeleteModal(${task.id})"
+        >Delete</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+
+// ─── mark complete ──────────────────────────────────────────
+async function toggleComplete(id, done) {
+  const res = await fetch(API + id + '/', {
+    method: 'PATCH',
+    headers: authHeaders(),
+    body: JSON.stringify({ completed: done })
+  });
+
+  if (res.status === 401) { window.location.href = '/login'; return; }
+  loadTasks();
+}
+
+
+// ─── edit modal ─────────────────────────────────────────────
+let editingId = null;
+
+function openEditModal(id, title) {
+  editingId = id;
+  document.getElementById('editInput').value = title;
+  document.getElementById('editError').style.display = 'none';
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+  editingId = null;
+}
+
+async function saveEdit() {
+  const newTitle = document.getElementById('editInput').value.trim();
+  const errorEl  = document.getElementById('editError');
+
+  if (!newTitle) {
+    errorEl.textContent   = 'Title cannot be empty.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const res = await fetch(API + editingId + '/', {
+    method: 'PATCH',
+    headers: authHeaders(),
+    body: JSON.stringify({ title: newTitle })
+  });
+
+  if (res.status === 401) { window.location.href = '/login'; return; }
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    errorEl.textContent   = data.title?.[0] || 'Could not save. Please try again.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  closeEditModal();
+  loadTasks();
+}
+
+
+// ─── delete modal ────────────────────────────────────────────
+let deletingId = null;
+
+function openDeleteModal(id) {
+  deletingId = id;
+  document.getElementById('deleteModal').style.display = 'flex';
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').style.display = 'none';
+  deletingId = null;
+}
+
+async function confirmDelete() {
+  const res = await fetch(API + deletingId + '/', {
+    method: 'DELETE',
+    headers: { Authorization: 'Bearer ' + localStorage.getItem('access') }
+  });
+
+  if (res.status === 401) { window.location.href = '/login'; return; }
+
+  closeDeleteModal();
+  loadTasks();
+}
+
+
+// ─── close modals on backdrop click ─────────────────────────
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
+
+
+window.onload = loadTasks;
+</script>
+
+{% endblock %}

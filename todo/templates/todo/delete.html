@@ -1,34 +1,110 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}Delete Task — YourApp{% endblock %}
 
-<!DOCTYPE html>
+{% block body %}
+<div class="action-page">
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Task</title>
-<!-- CSS -->
-<link rel="stylesheet" href="{% static 'todo/style.css' %}">
-</head>
+  <!-- ── TOP NAV ── -->
+  <nav class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">Y</div>
+      <span class="topbar-logo-name">YourApp</span>
+    </div>
+    <div class="topbar-nav">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'add_task' %}">Add Task</a>
+      <a href="{% url 'update' %}">Update</a>
+      <a href="{% url 'delete' %}" class="active">Delete</a>
+    </div>
+    <div class="topbar-hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="topbar-avatar">U</div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'add_task' %}">Add Task</a>
+    <a href="{% url 'update' %}">Update</a>
+    <a href="{% url 'delete' %}">Delete</a>
+  </div>
 
-<body class="delete-body">
-<div class="delete-container">
+  <div class="action-body">
 
-    <h3 class="delete-title">
-        Are you sure you want to delete<br>
-        <span class="highlight">"{{ task }}"</span>?
-    </h3>
+    <!-- ── LEFT PANEL (red) ── -->
+    <div class="action-left danger-bg">
+      <div>
+        <div class="action-left-logo auth-logo" style="margin-bottom:32px;">
+          <div class="auth-logo-icon">Y</div>
+          <span class="auth-logo-name">YourApp</span>
+        </div>
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6m4-6v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </div>
+        <h2 class="action-left-title">Delete entry.</h2>
+        <p class="action-left-sub">This action is permanent. The record will be removed and cannot be recovered.</p>
+      </div>
+      <div class="action-tips">
+        <div class="action-tip"><div class="action-tip-dot"></div><span>This action is irreversible</span></div>
+        <div class="action-tip"><div class="action-tip-dot"></div><span>Double-check the ID before deleting</span></div>
+        <div class="action-tip"><div class="action-tip-dot"></div><span>Consider updating instead</span></div>
+      </div>
+    </div>
 
-    <form method="POST">
-        {% csrf_token %}
+    <!-- ── RIGHT PANEL (form) ── -->
+    <div class="action-right">
+      <div class="action-form-box">
+        <h2 class="auth-form-title">Delete Data</h2>
+        <p class="auth-form-sub" style="color: var(--red);">Permanently remove a record.</p>
 
-        <div class="btn-group">
-            <button type="submit" class="delete-btn">Yes, Delete</button>
-            <a href="/" class="cancel-btn">Cancel</a>
+        <div class="warning-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+          <p>Warning: This action cannot be undone. The record will be permanently deleted from your account.</p>
         </div>
 
-    </form>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="warning-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+              <p>{{ message }}</p>
+            </div>
+          {% endfor %}
+        {% endif %}
 
+        <form method="post" action="{% url 'delete' %}">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">Task ID to delete</label>
+            <div class="form-field danger">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>
+              <input type="text" name="task_id" placeholder="Enter task ID" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-danger">
+            Confirm Delete
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </form>
+
+        <div class="link-row">
+          <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
-</body>
-</html>
+
+<script>
+function toggleNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+</script>
+{% endblock %}

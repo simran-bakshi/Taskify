@@ -1,39 +1,111 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}Update Task — Taskify{% endblock %}
 
-<!DOCTYPE html>
+{% block body %}
+<div class="action-page">
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Task</title>
+  <!-- ── TOP NAV ── -->
+  <nav class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">Y</div>
+      <span class="topbar-logo-name">YourApp</span>
+    </div>
+    <div class="topbar-nav">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'add_task' %}">Add Task</a>
+      <a href="{% url 'update' %}" class="active">Update</a>
+      <a href="{% url 'delete' %}">Delete</a>
+    </div>
+    <div class="topbar-hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="topbar-avatar">U</div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'add_task' %}">Add Task</a>
+    <a href="{% url 'update' %}">Update</a>
+    <a href="{% url 'delete' %}">Delete</a>
+  </div>
 
+  <div class="action-body">
 
-<!-- CSS -->
-<link rel="stylesheet" href="{% static 'todo/style.css' %}">
-
-</head>
-
-<body class="update-body">
-
-<div class="update-container">
-    <h3>✏️ Update Your Task</h3>
-
-    <form method="POST">
-        {% csrf_token %}
-
-        <label for="id_title">Task Title</label>
-        {{ form.title }}
-
-        <div class="checkbox-field">
-            {{ form.completed }}
-            <label for="id_completed">Mark as Completed</label>
+    <!-- ── LEFT PANEL ── -->
+    <div class="action-left">
+      <div>
+        <div class="action-left-logo auth-logo" style="margin-bottom:32px;">
+          <div class="auth-logo-icon">Y</div>
+          <span class="auth-logo-name">YourApp</span>
         </div>
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <h2 class="action-left-title">Update your task.</h2>
+        <p class="action-left-sub">Things change. Keep your tasks in sync with your current priorities.</p>
+      </div>
+      <div class="action-tips">
+        <div class="action-tip"><div class="action-tip-dot"></div><span>Use the exact task ID</span></div>
+        <div class="action-tip"><div class="action-tip-dot"></div><span>Changes are saved immediately</span></div>
+        <div class="action-tip"><div class="action-tip-dot"></div><span>Previous data will be overwritten</span></div>
+      </div>
+    </div>
 
-        <button type="submit">💾 Save Changes</button>
-    </form>
+    <!-- ── RIGHT PANEL (form) ── -->
+    <div class="action-right">
+      <div class="action-form-box">
+        <h2 class="auth-form-title">Update Data</h2>
+        <p class="auth-form-sub">Modify an existing entry.</p>
 
-    <a href="/" class="back-btn">Back to Task List</a>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="warning-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+              <p>{{ message }}</p>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="post" action="{% url 'update' %}">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">Task ID</label>
+            <div class="form-field">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              <input type="text" name="task_id" placeholder="Enter task ID" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">New Value</label>
+            <div class="form-field">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <input type="text" name="new_value" placeholder="Updated value" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            Save Update
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          </button>
+        </form>
+
+        <div class="link-row">
+          <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
-</body>
-</html>
+
+<script>
+function toggleNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+</script>
+{% endblock %}

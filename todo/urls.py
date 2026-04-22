@@ -1,8 +1,22 @@
 from django.urls import path
 from . import views
+from .views import signup, login
 
 urlpatterns = [
-    path('', views.index, name='list'),
-    path('update/<str:pk>/', views.updateTask, name='update_task'),
-    path('delete/<str:pk>/', views.deleteTask, name='delete_task'),
+
+    #API end points
+    path('api/tasks/', views.task_list),
+    path('api/tasks/<int:pk>/', views.task_detail),
+    path('api/signup/', signup),
+    path('api/login/', login),
+
+
+
+
+# UI pages
+    path('', views.index),              
+    path('login/', views.login_page),
+    path('signup/', views.signup_page),
+    path('task/', views.task_page),
+    
 ]
