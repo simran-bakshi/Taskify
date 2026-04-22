@@ -129,3 +129,9 @@ This is my **first Django project 🌱**, and it represents my transition from J
 Looking forward to building more advanced and scalable applications 🚀
 
 ---
+
+<p align="center">
+  Made with ❤️ while learning and building with Django 🌿
+</p>
+
+                                          
